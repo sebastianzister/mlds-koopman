@@ -13,6 +13,12 @@ RED_Z_2 = "#780000"
 PURPLE_Z_1 = "#d0a5c0"
 PURPLE_Z_2 = "#c64191"
 
+def duffing_system(t, state):
+    x, y, z = state
+    dxdt = y
+    dydt = x - x**3
+    return [dxdt, dydt, 0]
+
 # taken from https://github.com/BenEcon/manim--/blob/main/lorenz_attractor.py
 # Define the Lorenz system of differential equations
 def lorenz_system(t, state, sigma=10, rho=28, beta=8 / 3):
@@ -31,6 +37,42 @@ def ode_solution_points(function, state0, time, dt=0.01):
         t_eval=np.arange(0, time, dt)  # Time points at which to store the solution
     )
     return solution.y.T  # Return the transposed solution array
+
+class DuffingOscillator(ThreeDScene):
+    def construct(self):
+        # Set up 3D axes with specified ranges and color
+        system = lambda y: np.array([y[1], y[0] - y[0]**3, 0])
+
+        axes = ThreeDAxes(
+            x_range=[-1.5, 1.5, 0.1],  # X-axis range from -10 to 10 with tick marks every 1 unit
+            y_range=[-1.5, 1.5, 0.1],  # Y-axis range from -1 to 1 with tick marks every 0.1 units
+            z_range=[0, 1, 0.1],    # Z-axis range from 0 to 1 with tick marks every 0.1 units
+            axis_config={"color": GREY},  # Set the color of the axes to grey
+        )
+
+
+
+        stream_lines = StreamLines(
+            system,
+            x_range=[-1.0, 1.0, 0.1],
+            y_range=[-0.8, 0.8, 0.2],
+            stroke_width=2,
+            max_anchors_per_line=100,
+            padding=1,
+            virtual_time=5,  # Set the virtual time for the stream lines
+            colors=[BLUE_Z_2, BLUE_Z_1],
+        )
+
+        axes.move_to(ORIGIN)
+        stream_lines.fit_to_coordinate_system(axes)
+
+        self.add(stream_lines)
+        stream_lines.start_animation(warm_up=True, flow_speed=1, time_width=1.0)
+        self.wait(stream_lines.virtual_time / stream_lines.flow_speed)
+        self.next_section("loop")
+        self.wait(stream_lines.virtual_time / stream_lines.flow_speed)
+
+        #self.add(stream_lines, spawning_area, *labels)
 
 # Define a class for visualizing the Lorenz attractor
 class LorenzAttractor(ThreeDScene):

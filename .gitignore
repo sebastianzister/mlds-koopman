@@ -176,3 +176,6 @@ cython_debug/
 # manim renders
 media/
 slides/
+*.mp4
+*.png
+*.svg
