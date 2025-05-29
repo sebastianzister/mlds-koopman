@@ -1,0 +1,15 @@
+\documentclass[varwidth, border=5pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\begin{document}
+\[
+\textbf{F}^t: \mathcal{X}\to\mathcal{X}
+\]
+$\mathcal{K}^{t}\colon{\mathcal{G}}(\mathcal{X})\to\mathcal{G}(\mathcal{X})$
+
+
+
+\end{document}
+
