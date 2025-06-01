@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.integrate import solve_ivp
 from manim import *
+from manim_mobject_svg import *
 
 #class StreamLinesFuncZ(StreamLines):
 #    def __init__(self, *args, **kwargs):
@@ -204,25 +205,6 @@ class Intro(ThreeDScene):
         self.add(koopman)
         self.add(title)
 
-class Outline(ThreeDScene):
-    def construct(self):
-        spacing = 0.25
-        title = Text("Outline", font_size=72).to_edge(UP, buff=spacing)
-        # TODO: The height is different for each item, so we need to set the height of the items to be the same
-        items = VGroup(
-            Tex("1. Motivation", font_size=72),
-            Tex("2. Koopman 101", font_size=72),
-            Tex("3. Simple embedding", font_size=72),
-            Tex("4. Applications", font_size=72),
-            Tex("5. Limitations", font_size=72)
-        )
-        items.arrange(DOWN, buff=spacing, aligned_edge = LEFT).next_to(title, DOWN, buff=spacing*2).to_edge(LEFT, buff=spacing)
-        
-
-        rect = SurroundingRectangle(items, color=WHITE, buff=0.1)
-
-        self.add(title)
-        self.add(items)
 class Motivation(ThreeDScene):
     def construct(self):
         return
@@ -282,6 +264,9 @@ class EigenfunctionsDef(ThreeDScene):
 #        self.play(def_eig_fun.animate.to_edge(UP),
 #        expl.animate.to_edge(UP, buff=2))
         self.add(comparision, def_eig_fun, expl)
+        
+        exp_group = VGroup(comparision, def_eig_fun, expl)
+        exp_group.to_svg("eigenfunctions_def.svg")
 
 class Eigenfunctions(ThreeDScene):
     def construct(self):
@@ -329,6 +314,63 @@ class KMD(ThreeDScene):
 
         self.add(group, repr_dyn, single_exp)
 
+class InvariantSubspace(ThreeDScene):
+    def construct(self):
+        self.next_section("title")
+
+        title = Tex("Invariant Subspaces", font_size=72).to_edge(UP, buff=0.5)
+        self.add(title)
+        span = Tex(
+            r"$span({g_1, g_2, \ldots, g_p})\subseteq{\cal G}({\cal X}), p\in\mathbb{N}$ \\",
+        ).next_to(title, DOWN, buff=0.5)
+        subspace = Tex(
+            r"where all linear combinations are invariant under ${\cal K}$:"
+        ).next_to(span, DOWN, buff=0.5)
+        formula = MathTex(
+            r"{g=\sum_{i=1}^{p}{\alpha_i g_i}}\Longrightarrow{\cal K}g=\sum_{i=1}^{p}{\beta_i g_i} \quad\quad \alpha_i,\beta_i\in\mathcal{X}",
+        ).next_to(span, DOWN, buff=0.5)
+        span.set_color_by_tex("G", YELLOW_C)
+
+        koopman_matrix = Tex(
+            r"If we restict ${\cal K}$ to such an invariant subspace, \\"
+            r"we can represent it as a matrix:"
+        ).next_to(formula, DOWN, buff=0.5)
+
+        symbol_operator = MathTex(r"{\cal K}", font_size=72).next_to(koopman_matrix, DOWN, buff=0.5)
+        symbol_matrix= MathTex(r"{\bf K}", font_size=72).next_to(koopman_matrix, DOWN, buff=0.5)
+        self.add(span, subspace)
+
+        self.next_section("transform_formula")
+
+        self.play(Transform(subspace, formula, run_time=2, fade_transform_mismatches=True))
+
+        self.next_section("koopman_matrix")
+
+        self.play(Write(koopman_matrix))
+
+        self.next_section("symbol_operator")
+
+        self.play(TransformMatchingTex(symbol_operator, symbol_matrix, run_time=2, fade_transform_mismatches=True))
+
+        self.play(FadeOut(span), FadeOut(subspace), FadeOut(formula), FadeOut(koopman_matrix))
+
+        self.play(symbol_matrix.animate.next_to(title, DOWN, buff=0.5))
+        self.play(symbol_matrix.animate.set_color(YELLOW_C))
+
+        vec_space = Tex(
+            r"acts on a vector space $\mathbb{K}^p$, \\"
+            r"with coordinates by the values of $g_j({\bf x})$, \\"
+            r"resulting in a finite linear system"
+        ).next_to(symbol_matrix, DOWN, buff=0.5)
+        self.play(Write(vec_space))
+
+        eig_span_invariant = Tex(
+            r"Any finite set of eigenfunctions of ${\cal K}$ \\"
+            r"spans an invariant subspace of ${\cal G}({\cal X})$!"
+        ).next_to(vec_space, DOWN, buff=0.5)
+        eig_span_invariant.set_color_by_tex("K", RED_Z_1)
+
+        self.play(Write(eig_span_invariant))
 
 class AbstractEmbedding(ThreeDScene):
     def construct(self):
@@ -372,7 +414,7 @@ class SimpleEmbedding(ThreeDScene):
     def construct(self):
         ### SETUP ###
         axes = ThreeDAxes(z_range=[0, 1, 1], x_range=[-1, 1, 1], y_range=[-1, 1, 1])
-        axes.set_color(BLACK)
+        axes.set_color(GREY)
         axes.set_stroke(width=0.5)
         axes.set_opacity(0.5)
         mu = -0.05
@@ -382,11 +424,12 @@ class SimpleEmbedding(ThreeDScene):
 
         stream_lines = StreamLines(
             system,
-            x_range=[-1, 1, 0.05],
-            y_range=[-1, 1, 0.05],
+            x_range=[-1, 1, 0.1],
+            y_range=[-1, 1, 0.1],
             stroke_width=2,
             max_anchors_per_line=100,
             padding=1,
+            virtual_time=5,
             colors=[BLUE_Z_2, BLUE_Z_1],
         )
 
@@ -424,7 +467,7 @@ class SimpleEmbedding(ThreeDScene):
 
         ## Show nonlinear system
         self.add(stream_lines)
-        stream_lines.start_animation(warm_up=False, flow_speed=1)
+        stream_lines.start_animation(warm_up=True, flow_speed=1, time_width=1.0)
         self.wait(cycle_time)
 
         ## Move to 3d
