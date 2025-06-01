@@ -229,16 +229,106 @@ class Motivation(ThreeDScene):
 
 class Derivation(ThreeDScene):
     def construct(self):
-        spacing = 0.5
-        ode = MathTex(r"\frac{dx}{dt}=f(x, t)", font_size=72).to_edge(UP, buff=spacing)
-        discrete_ode = MathTex(r"x_{k+1}=F(x_{k})", font_size=72).next_to(ode, DOWN, buff=spacing)
-        embedding = MathTex(r"\phi(x_{k+1})=\phi(F(x_k))", font_size=72).next_to(discrete_ode, DOWN, buff=spacing)
-        koopman = MathTex(r"\phi(x_{k+1})=\mathcal{K}\phi(x_k)", font_size=72).next_to(embedding, DOWN, buff=spacing)
+        template = TexTemplate()
+        template.add_to_preamble(r"\usepackage{mathtools}")
+        # Full aligned block
+        assumptions = MathTex(
+            r"&{\bf x}\in\mathcal{X}, \mathcal{X}\subseteq\mathbb{R}^n, t\in \mathbb{N} \\",
+        ).to_corner(UL, buff=0.5)
+        state_eqs = MathTex(
+            r"{{\frac{d}{dt}{\bf x}(t)}}{{ &= }}{{{\bf f}({\bf x})}} \\"
+            r"{{ \textbf{x}_{k+1} }} {{ &= }} {{ {\bf F}({\bf x}_k) }} \\"
+            r"{\bf x}(t) &= {\bf F}^t({\bf x}(0)) \\"
+            r"{\bf x}(t) &= {\bf F}({\bf F}(\dots({\bf F}({\bf x}(0))))) \\"
+        ).to_edge(LEFT, buff=0.5)
+        goal_eq = MathTex(
+            r"{\bf z}_{k+1} &= {\bf K}{\bf z}_k"
+        ).to_corner(DL,buff=1.0)
 
-        self.add(ode)
-        self.play(TransformFromCopy(ode, discrete_ode, run_time=2))
-        self.play(TransformFromCopy(discrete_ode, embedding, run_time=2))
-        self.play(TransformFromCopy(embedding, koopman, run_time=2))
+        definitions = MathTex(
+            r"\mathcal{G}(\mathcal{X}),\mathcal{K}^t \colon \mathcal{G}(\mathcal{X}) \to \mathcal{G}(\mathcal{X})"
+        ).to_corner(UR, buff=0.5)
+
+        measurement_eqs = MathTex(
+            r"g({\bf x}(t)) &= g({\bf F}^t({\bf x}(0))) \\"
+            r"\mathcal{K}^tg({\bf x}) &= g({\bf F}^t({\bf x})) \\"
+            r"g_t &\coloneqq \mathcal{K}^t g , g_0\coloneqq g \\"
+            r"g_t &= \mathcal{K}\circ\mathcal{K}\circ\dots\circ\mathcal{K}g\\"
+        , tex_template=template
+        ).to_edge(RIGHT, buff=0.5)
+
+        finish_eq = MathTex(
+            r"g_{k+1} = \mathcal{K}g_k"
+        ).to_corner(DR, buff=1.0)
+
+        self.add(assumptions, state_eqs, goal_eq, measurement_eqs, finish_eq, definitions)
+
+class EigenfunctionsDef(ThreeDScene):
+    def construct(self):
+        comparision = Tex(r"Similar to eigenvectors for matricies, \\" 
+            r"there are \textit{eigenfunctions} $\varphi({\bf x})$ of $\mathcal{K}$, \\"
+            r"with corresponding \textit{eigenvalues} $\lambda\in\mathbb{C}$").to_corner(UL, buff=0.5)
+        def_eig_fun = MathTex(r"\varphi({\bf x}_{k+1})={\cal K}\varphi({\bf x}_{k})=\lambda\varphi({\bf x}_{k}).")
+
+        expl = Tex(
+            r"These functions are time-invariant directions in our observable space $\mathcal{G}(\mathcal{X})$"
+            ).to_corner(DR, buff=0.5)
+
+#        self.play(Write(comparision))
+#        self.play(Write(def_eig_fun))
+#        self.play(Write(expl))
+#
+#        self.play(FadeOut(comparision))
+#        self.play(def_eig_fun.animate.to_edge(UP),
+#        expl.animate.to_edge(UP, buff=2))
+        self.add(comparision, def_eig_fun, expl)
+
+class Eigenfunctions(ThreeDScene):
+    def construct(self):
+
+        multipl = MathTex(
+            r"{\cal K}(\varphi_{1}({\bf x})\varphi_{2}({\bf x}))&=\varphi_{1}({\bf F}({\bf x}))\varphi_{2}({\bf F}({\bf x}))\\",
+            r"&=\lambda_{1}\lambda_{2}\varphi_{1}({\bf x})\varphi_{2}({\bf x})"
+        ).to_edge(UP)
+
+        expl_mult = Tex(
+            r"The product of two Eigenfunctions is an Eigenfunctions \\",
+            r"(if ${\cal G}({\cal X})$ is closed under multiplication)"
+        ).next_to(multipl, DOWN)
+        self.add(multipl, expl_mult)
+
+        evolve_lin = MathTex(r"g({\bf x})=\sum_{k}v_{k}\varphi_{k}\quad\Longrightarrow\quad {\cal K}^{t}g({\bf x})=\sum_{k}v_{k}\lambda_{k}^{t}\varphi_{k}")
+        expl_evolve = Tex(
+            r"Observables $g\in span\{\varphi_k\}^K_{k=1}$ evolve particulary simple \\",
+            r"$\Longrightarrow\quad span\{\varphi_k\}^K_{k=1}\subseteq{\cal G}({\cal X})$ is invariant under the action of ${\cal K}$"
+            ).next_to(evolve_lin, DOWN)
+        self.add(evolve_lin, expl_evolve)
+
+class KMD(ThreeDScene):
+    def construct(self):
+        measurements = Matrix([[r"g_1({\bf x})"], [r"g_2({\bf x})"], [r"\vdots"],[r"g_p({\bf x})"]], h_buff=0.5, element_alignment_corner=[0, 0, 0])
+        single_exp = MathTex(
+            r"g_{i}({\bf x})=\sum_{j=1}^{\infty}v_{i j}\varphi_{j}({\bf x})"
+        )
+        measurements_exp = MathTex(
+            r"=\sum_{j=1}^{\infty}\varphi_{j}(\mathbf{x})\mathbf{v}_{j}"
+        )
+        repr_dyn = MathTex(
+            r"{\bf g}({\bf x}(t))={\cal K}^t{\bf g}({\bf x}_0)&={\cal K}^t\sum_{j=1}^{\infty}\varphi_j({\bf x}_0){\bf v}_j\\",
+            r"&=\sum_{j=1}^{\infty}{\cal K}^{t}\varphi_{j}({\bf x}_{0}){\bf v}_j\\ ",
+            r"&=\sum_{j=1}^{\infty}\lambda_{j}^{t}\varphi_{j}({\bf x}_{0}){\bf v}_j",
+        ).to_edge(RIGHT)
+
+        group = VGroup(measurements, measurements_exp).arrange(RIGHT)
+        group.to_edge(LEFT, buff=0.5)
+
+        single_exp.next_to(group, UP)
+
+
+
+
+        self.add(group, repr_dyn, single_exp)
+
 
 class AbstractEmbedding(ThreeDScene):
     def construct(self):
