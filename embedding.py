@@ -407,6 +407,43 @@ class AbstractEmbedding(ThreeDScene):
         self.play(TransformMatchingTex(state_descr2[1], observ_descr[1], run_time=2, fade_transform_mismatches=True))
         self.interactive_embed()
 
+class DMD(ThreeDScene):
+    def construct(self):
+        self.next_section("title")
+
+        title = Tex("Dynamic Mode Decomposition", font_size=72).to_edge(UP, buff=0.5)
+        self.add(title)
+
+        self.next_section("dmd_descr")
+
+        dmd_desc = Tex(r"Dynamic Mode Decomposition (DMD) is a data-driven method, \\"
+                       r"which finds a matrix approximation of the Koopman operator ${\cal K}$, \\"
+                       r"restricted to the subspace spaned by the state variables themselves \\"
+                       ).next_to(title, DOWN, buff=0.5)
+        dmd_eq = MathTex(
+            r"x_{k+1} = {\bf A}x_k"
+        ).next_to(title, DOWN, buff=0.5)
+        dmd_eq.set_color_by_tex("K", YELLOW_C)
+        self.add(dmd_desc)
+        self.wait(1)
+
+        self.next_section("dmd_eq")
+
+        self.play(TransformMatchingTex(dmd_desc, dmd_eq, run_time=2, fade_transform_mismatches=True))
+
+        snapshots = MathTex(
+            r"\mathbf{X}={\left[\begin{array}{l l l l}{\left|\mathbf{x}(t_{1})}&{\mathbf{x}(t_{2})}&{\cdot\mathbf{\cdot\cdot\mathbf{\theta} } }&{\left|\mathbf{}\right|}\\ {\left|\mathbf{}&{\left|\mathbf{\theta} } }&{\end{array}\right|} }\\ {\mathbf{x}^{\prime}=\left[\mathbf{x}(t_{1}^{\prime})}&{\mathbf{x}(t_{2}^{\prime})}&{\cdot\cdot\mathbf{\theta} }&{\left|\mathbf{}\right|}\end{array}\right]}"
+        )
+
+
+        #self.next_section("dmd_matrix")
+
+        #dmd_matrix = MathTex(
+        #    r"{\bf K}={\bf V}{\bf \Lambda}{\bf V}^{-1}"
+        #).next_to(dmd_eq, DOWN, buff=0.5)
+        #dmd_matrix.set_color_by_tex("K", YELLOW_C)
+        #self.add(dmd_matrix)
+
 class SimpleEmbedding(ThreeDScene):
     def observable(self, u, v):
        return np.array([u, v, u**2])
