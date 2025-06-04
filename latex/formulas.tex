@@ -19,12 +19,115 @@
 %\begin{itemize}
 % \item EV $= \pm\sqrt{2}i$
 %\end{itemize}
-$\mathcal{K}$
+
+%\begin{math} \;\mathbf{X}= \left[ \begin{array}{c c c c}
+%\vline & \vline &  & \vline \\
+%{\bf x}(t_1) & {\bf x}(t_2) & \cdots & {\bf x}(t_m) \\
+%\vline & \vline &  & \vline \\
+%\end{array}
+%\right]
+%\end{math}
+%
+%\begin{math}
+%\mathbf{X^\prime}=
+%\left[
+%\begin{array}{c c c c}
+%\vline & \vline &  & \vline \\
+%{\bf x}(t^\prime_1) & {\bf x}(t^\prime_2) & \cdots & {\bf x}(t^\prime_m) \\
+%\vline & \vline &  & \vline \\
+%\end{array}
+%\right]
+%\end{math}
+
+%${\bf X^\prime}\approx{\bf AX}$ \\
+%$\mathbf{A}=\operatorname*{argmin}_{\mathbf{A}}\|\mathbf{X}^{\prime}-\mathbf{A}\mathbf{X}\|_{F}=\mathbf{X}^{\prime}\mathbf{X}^{\dagger}$\\
+%${\bf A\Phi} = {\bf \Phi\Lambda}$\\
+%${\bf X} = {\bf U\Sigma V}^*\Rightarrow {\bf X}^\dagger = {\bf V\Sigma}^{-1}{\bf U}^*$
+
+%\underline{State Space}
+%\[\begin{aligned}
+%\dot{x}_1 &= \mu x_1 \\
+%\dot{x}_2 &= \lambda(x_2 - x^2_1)
+%\end{aligned}\]
+%If $\lambda < \mu < 0$\\
+%Slow Manifold:
+%\begin{itemize}
+% \item $x_2=x^2_1$
+%\end{itemize}
+%Here:
+%\begin{itemize}
+% \item $\lambda=-1$
+% \item $\mu=-0.05$
+%\end{itemize}
+
+%\underline{Measurement Space}\\
+%\\
+%\begin{math}
+%{\bf y} =
+%\left[
+%\begin{array}{c}
+%    y_1\\
+%    y_2\\
+%    y_3\\
+%\end{array}
+%\right] =
+%\left[
+%\begin{array}{c}
+%    x_1\\
+%    x_2\\
+%    x^2_1\\
+%\end{array}
+%\right]
+%\end{math}
+%
+%Dynamics:\\
+%
+%\begin{math}
+%\frac{d}{dt}
+%{\bf y} =
+%\left[
+%\begin{array}{c c c}
+%    \mu & 0 & 0\\
+%    0 & \lambda & \lambda\\
+%    0 & 0 & 2\mu \\
+%\end{array}
+%\right]
+%{\bf y}
+%\end{math}
+%
+%Eigenfunctions:
+%\begin{itemize}
+% \item $\varphi_\mu=x_1$
+% \item $\varphi_\lambda=x_2-b x^2_1$
+%\end{itemize}
+%
+%Where:
+%$b=\frac{\lambda}{\lambda-2\mu}$
+%
+
+\underline{Measurement Space}\\
+\\
+Eigenfunctions:
+\begin{itemize}
+ \item $\varphi_\mu=x_1$
+ \item $\varphi_\lambda=x_2-b x^2_1$
+\end{itemize}
+
+Where:
+$b=\frac{\lambda}{\lambda-2\mu}$
+
 \begin{math}
-\mathbf{X}=
+{\bf y} =
 \left[
-\begin{array}{l l l l}
-a & b & c & d
+\begin{array}{c}
+    y_1\\
+    y_2\\
+\end{array}
+\right] =
+\left[
+\begin{array}{c}
+    \varphi_\mu({\bf x})\\
+    \varphi_\lambda({\bf x})\\
 \end{array}
 \right]
 \end{math}
